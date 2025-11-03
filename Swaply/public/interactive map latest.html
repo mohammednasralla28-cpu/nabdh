@@ -1,0 +1,677 @@
+
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>خريطة قطاع غزة - النقاط المهمة</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #f4f4f4;
+      --text: #000000;
+      --muted: #000000;
+      --accent: #ff0000;
+      --accent-strong: #00f000;
+      --map-fill: #0f172a;
+      --map-stroke: #334155;
+      --shadow: 0 10px 20px rgba(0,0,0,.35);
+    }
+
+
+    * {
+      box-sizing: border-box;
+      font-family: "Readex Pro", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background-color: white;
+      color: var(--text);
+      direction: rtl;
+    }
+body.light-mode {
+  background-color: black;
+  color: white;
+}
+
+body.light-mode .controls {
+  background: #000000;
+  border-color: white;
+  color: black;
+}
+
+body.light-mode label,
+body.light-mode .controls h2,
+body.light-mode .controls p {
+  color: #374151;
+}
+
+body.light-mode .controls select {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #d1d5db;
+}
+
+body.light-mode .poi text {
+  fill: #ffffff;
+  stroke: #00ff00;
+}
+
+body.light-mode .gaza-outline {
+  fill: #0b1220;
+}
+
+body.light-mode .legend .dot {
+  background: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+
+    .app {
+      display: flex;
+      
+      gap: 16px;
+      padding: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100vh;
+      flex-direction: row-reverse;
+    }
+
+    .map-wrap {
+      flex: 1;
+      min-height: 60vh;
+      border-radius: 18px;
+      background: white;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      align-items: start;
+      justify-content: center;
+      display: flex;
+    }
+
+    .title {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      font-size: 18px;
+      color: black;
+      text-shadow: 0 0.5px 0 rgba(0,0,0,.4);
+    }
+
+    .controls {
+      width: 320px;
+      max-width: 100%;
+      background: var(--panel);
+      border: 1px solid #1f2937;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-self: flex-start;
+    }
+
+    .controls h2 {
+      font-size: 16px;
+      margin: 0 0 4px;
+      color: black;
+    }
+
+    .controls p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    label {
+      font-size: 13px;
+      color: black;
+    }
+
+    select {
+      appearance: none;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #253048;
+      background: white;
+      color: black;
+      font-size: 14px;
+      outline: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%239ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+      background-repeat: no-repeat;
+      background-position: left 10px center;
+      background-size: 18px;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: black;
+    }
+
+    .legend .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 2px rgba(96,165,250,.25);
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .gaza-outline {
+      fill: var(--map-fill);
+      stroke: var(--map-stroke);
+      stroke-width: 2;
+    }
+
+    .poi {
+      cursor: pointer;
+    }
+
+    .poi circle {
+      fill: var(--accent);
+      stroke: rgba(255,255,255,.08);
+      stroke-width: 2;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
+      transition: transform .2s ease, r .2s ease, fill .2s ease;
+    }
+
+    .poi text {
+      font-size: 8px;
+      fill: black;
+      paint-order: stroke;
+      stroke: #fff;
+      stroke-width: 1px;
+      letter-spacing: .2px;
+    }
+
+    .poi.active circle {
+      fill: var(--accent-strong);
+      animation: pulse 1.2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1) }
+      50%{transform: scale(1.4) }
+     
+      
+     
+  
+    }
+
+    @media (max-width: 900px) {
+      .app { flex-direction: column; }
+      .controls { width: 100%; }
+      .title { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="خريطة قطاع غزة">
+    <section class="map-wrap" aria-live="polite">
+      <div class="title">خريطة قطاع غزة - النقاط المهمة</div>
+      <svg viewBox="0 0 300 300" role="img" aria-labelledby="mapTitle mapDesc">
+        <title id="mapTitle">خريطة قطاع غزة</title>
+        <desc id="mapDesc">رسم توضيحي بسيط لقطاع غزة مع النقاط المهمة</desc>
+<g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+
+<path style="fill:black;" d="M2020 2673 c-58 -81 -129 -175 -159 -208 -29 -33 -104 -125 -166 -205 -62 -80 -134 -165 -160 -190 -26 -25 -65 -70 -88 -100 -69 -93 -262 -313 -344 -391 -43 -41 -211 -207 -373 -369 l-295 -295 52 -75 c29 -41 66 -92 82 -113 19 -23 35 -62 45 -105 15 -67 125 -434 131 -441 7 -7 117 93 130 119 9 18 58 51 154 104 l140 77 41 82 c40 79 42 81 102 106 79 33 99 65 99 154 0 35 -11 108 -25 165 -14 55 -26 124 -26 153 0 48 6 60 74 163 66 98 104 139 326 351 139 132 257 243 264 247 7 4 41 41 75 82 60 71 83 89 265 209 27 18 81 65 120 106 65 67 71 78 76 123 l6 50 -56 47 c-50 43 -249 204 -338 274 -20 15 -38 27 -41 27 -3 0 -53 -67 -111 -147z m184 74 c34 -29 81 -68 106 -87 25 -19 89 -70 143 -114 95 -78 97 -81 97 -122 0 -37 -5 -46 -39 -74 -22 -17 -49 -45 -60 -63 -11 -18 -39 -44 -63 -57 -24 -13 -61 -38 -83 -55 -22 -17 -60 -44 -84 -59 -24 -16 -108 -92 -185 -170 -78 -77 -229 -224 -336 -326 -168 -159 -207 -201 -277 -305 -98 -142 -98 -145 -53 -335 33 -137 35 -166 19 -223 -9 -35 -17 -42 -82 -72 l-72 -32 -39 -81 c-29 -59 -47 -84 -70 -96 -17 -9 -58 -32 -91 -51 -33 -19 -84 -47 -112 -62 -29 -15 -53 -33 -53 -39 0 -15 -114 -128 -117 -117 -2 5 -25 82 -53 173 -28 91 -60 203 -72 249 -13 51 -30 93 -45 110 -13 14 -47 59 -76 100 l-52 74 130 131 c71 72 141 140 156 151 14 11 64 63 111 115 47 52 134 138 192 190 105 95 294 302 396 435 29 39 86 104 125 145 40 41 110 125 156 185 46 61 113 144 149 185 36 41 109 137 164 213 54 75 101 137 103 137 3 0 33 -24 67 -53z"/>
+
+</g>
+        <g class="poi" tabindex="0" data-key="بيت لاهيا" transform="translate(215,40)">
+          <circle r="4" />
+          <text x="14" y="-10">بيت لاهيا</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="بيت حانون" transform="translate(235,55)">
+          <circle r="4" />
+          <text x="14" y="14">بيت حانون</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="جباليا" transform="translate(190,70)">
+          <circle r="4" />
+          <text x="14" y="14">جباليا</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="غزة" transform="translate(167,94)">
+          <circle r="4" />
+          <text x="14" y="14">غزة</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="النصيرات" transform="translate(135,130)">
+          <circle r="4" />
+          <text x="14" y="-14">النصيرات</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="دير البلح" transform="translate(114,161)">
+          <circle r="4" />
+          <text x="1" y="14">دير البلح</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="المغازي" transform="translate(138,158)">
+          <circle r="4" />
+          <text x="14" y="14">المغازي</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="البريج" transform="translate(148,143)">
+          <circle r="4" />
+          <text x="20" y="-10">البريج</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="خان يونس" transform="translate(102,191)">
+          <circle r="4" />
+          <text x="14" y="14">خان يونس</text>
+        </g>
+        <g class="poi" tabindex="0" data-key="رفح" transform="translate(69,224)">
+          <circle r="4" />
+          <text x="14" y="14">رفح</text>
+        </g>
+        </svg>
+    </section>
+
+    <aside class="controls" aria-label="التحكم">
+      <h2>اختر منطقة</h2>
+      <p>اختر من القائمة لتحديد موقعها على الخريطة.</p>
+      <label for="citySelect">المناطق</label>
+     <select id="citySelect" name="places">
+  <option value="" selected>— اختر منطقة —</option>
+
+  <optgroup label="شمال غزة">
+    <option value="بيت لاهيا">بيت لاهيا</option>
+    <option value="بيت حانون">بيت حانون</option>
+    <option value="جباليا">جباليا</option>
+  </optgroup>
+
+  <optgroup label="مدينة غزة">
+    <option value="غزة">غزة</option>
+  </optgroup>
+
+  <optgroup label="الوسطى">
+    <option value="النصيرات">النصيرات</option>
+    <option value="دير البلح">دير البلح</option>
+    <option value="المغازي">المغازي</option>
+    <option value="البريج">البريج</option>
+  </optgroup>
+
+  <optgroup label="خان يونس">
+    <option value="خان يونس">خان يونس</option>
+  </optgroup>
+
+  <optgroup label="رفح">
+    <option value="رفح">رفح</option>
+  </optgroup>
+</select>
+<label for="destinationSelect">اختر الوجهة</label>
+<select id="destinationSelect">
+  <option value="">— اختر وجهة —</option>
+
+  <optgroup label="شمال غزة">
+    <option value="بيت لاهيا">بيت لاهيا</option>
+    <option value="بيت حانون">بيت حانون</option>
+    <option value="جباليا">جباليا</option>
+  </optgroup>
+
+  <optgroup label="مدينة غزة">
+    <option value="غزة">غزة</option>
+  </optgroup>
+
+  <optgroup label="الوسطى">
+    <option value="النصيرات">النصيرات</option>
+    <option value="دير البلح">دير البلح</option>
+    <option value="المغازي">المغازي</option>
+    <option value="البريج">البريج</option>
+  </optgroup>
+
+  <optgroup label="خان يونس">
+    <option value="خان يونس">خان يونس</option>
+  </optgroup>
+
+  <optgroup label="رفح">
+    <option value="رفح">رفح</option>
+  </optgroup>
+</select>
+
+<!-- Distance display box -->
+<div id="distanceDisplay" style="font-size:14px;color:#4b5563;margin-top:8px;">
+  المسافة: —
+</div>
+
+
+      <div class="legend"><span class="dot"></span> نقطة مهمة</div>
+      <p style="margin-top:8px;font-size:12px;color:#94a3b8">ملاحظة: هذه الخريطة تخطيطية وغير جغرافية دقيقة.</p>
+    </aside>
+  </main>
+
+ <script>
+  (function(){
+    const select = document.getElementById('citySelect');
+    const pois = Array.from(document.querySelectorAll('.poi'));
+
+    function setActive(key){
+      pois.forEach(p => p.classList.toggle('active', p.dataset.key === key));
+      const active = pois.find(p => p.dataset.key === key);
+      if(active && active.parentNode){
+        active.parentNode.appendChild(active); // move on top
+      }
+    }
+
+    select.addEventListener('change', e => {
+      const selected = e.target.value;
+      if (selected) setActive(selected);
+    });
+
+    pois.forEach(p => {
+      p.addEventListener('click', () => {
+        select.value = p.dataset.key;
+        setActive(p.dataset.key);
+      });
+      p.addEventListener('keypress', (evt) => {
+        if(evt.key === 'Enter' || evt.key === ' '){
+          evt.preventDefault();
+          p.click();
+        }
+      });
+    });
+  })();
+(function setupAdvancedPOIEditor(){
+  const pois = Array.from(document.querySelectorAll('.poi'));
+  const controls = document.querySelector('.controls');
+
+  // Build wrapper
+  const wrapper = document.createElement('div');
+  wrapper.style.marginTop = '24px';
+  wrapper.style.display = 'flex';
+  wrapper.style.flexDirection = 'column';
+  wrapper.style.gap = '10px';
+
+  const title = document.createElement('h2');
+  title.textContent = 'تحكم متقدم بالنقاط';
+  title.style.fontSize = '14px';
+  title.style.color = '#f3f4f6';
+
+  const dropdownLabel = document.createElement('label');
+  dropdownLabel.textContent = 'اختر نقطة:';
+  dropdownLabel.style.fontSize = '13px';
+  dropdownLabel.style.color = '#9ca3af';
+
+  const poiSelect = document.createElement('select');
+  poiSelect.style.padding = '8px';
+  poiSelect.style.borderRadius = '8px';
+  poiSelect.style.border = '1px solid #1f2937';
+  poiSelect.style.background = '#0b1220';
+  poiSelect.style.color = '#e5e7eb';
+
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = '— اختر نقطة —';
+  poiSelect.appendChild(defaultOption);
+
+  // Populate POIs
+  pois.forEach(poi => {
+    const key = poi.dataset.key || 'بدون اسم';
+    const option = document.createElement('option');
+    option.value = key;
+    option.textContent = key;
+    poiSelect.appendChild(option);
+  });
+
+  const sliders = {
+    x: createSlider('X', 0, 500),
+    y: createSlider('Y', 0, 500),
+    r: createSlider('الحجم (r)', 0, 10),
+    textX: createSlider('تحريك النص X', -50, 50),
+    textY: createSlider('تحريك النص Y', -50, 50),
+  };
+
+  let activePOI = null;
+
+  function createSlider(labelText, min, max) {
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.flexDirection = 'column';
+
+    const label = document.createElement('label');
+    label.textContent = labelText;
+    label.style.fontSize = '12px';
+    label.style.color = '#9ca3af';
+
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.min = min;
+    input.max = max;
+    input.step = '1';
+    input.value = 0;
+    input.style.width = '100%';
+
+    wrap.appendChild(label);
+    wrap.appendChild(input);
+
+    return { wrap, input };
+  }
+
+  function updatePOI() {
+    if (!activePOI) return;
+
+    // Update translate
+    const tx = parseFloat(sliders.x.input.value);
+    const ty = parseFloat(sliders.y.input.value);
+    activePOI.setAttribute('transform', `translate(${tx},${ty})`);
+
+    // Update circle radius
+    const circle = activePOI.querySelector('circle');
+    if (circle) {
+      const r = parseFloat(sliders.r.input.value);
+      circle.setAttribute('r', r);
+    }
+
+    // Update text position
+    const text = activePOI.querySelector('text');
+    if (text) {
+      const dx = parseFloat(sliders.textX.input.value);
+      const dy = parseFloat(sliders.textY.input.value);
+      text.setAttribute('x', dx);
+      text.setAttribute('y', dy);
+    }
+  }
+
+  // Hook up all sliders
+  Object.values(sliders).forEach(({ input }) => {
+    input.addEventListener('input', updatePOI);
+  });
+
+  // On POI select
+  poiSelect.addEventListener('change', () => {
+    const selectedKey = poiSelect.value;
+    activePOI = pois.find(p => p.dataset.key === selectedKey);
+    if (!activePOI) return;
+
+    // Extract transform
+    const match = activePOI.getAttribute('transform')?.match(/translate\(([-\d.]+),([-\d.]+)\)/);
+    sliders.x.input.value = match ? parseFloat(match[1]) : 0;
+    sliders.y.input.value = match ? parseFloat(match[2]) : 0;
+
+    // Extract radius
+    const circle = activePOI.querySelector('circle');
+    sliders.r.input.value = circle ? circle.getAttribute('r') : 4;
+
+    // Extract text position
+    const text = activePOI.querySelector('text');
+    sliders.textX.input.value = text ? text.getAttribute('x') || 0 : 0;
+    sliders.textY.input.value = text ? text.getAttribute('y') || 0 : 0;
+  });
+
+  // Mount UI
+  wrapper.appendChild(title);
+  wrapper.appendChild(dropdownLabel);
+  wrapper.appendChild(poiSelect);
+  Object.values(sliders).forEach(({ wrap }) => wrapper.appendChild(wrap));
+  controls.appendChild(wrapper);
+})();
+(function setupThemeToggle(){
+  const body = document.body;
+  const controls = document.querySelector('.controls');
+  const svgPath = document.querySelector('.gaza-outline') || document.querySelector('svg path');
+  const svgTexts = document.querySelectorAll('svg text');
+  const labels = document.querySelectorAll('label');
+
+  // Create toggle button
+  const toggle = document.createElement('button');
+  toggle.textContent = '🌙 الوضع الداكن';
+  toggle.style.padding = '10px 12px';
+  toggle.style.borderRadius = '10px';
+  toggle.style.background = '#1f2937';
+  toggle.style.color = '#e5e7eb';
+  toggle.style.border = '1px solid #334155';
+  toggle.style.cursor = 'pointer';
+  toggle.style.marginBottom = '10px';
+  toggle.style.fontSize = '14px';
+
+  let isDark = true;
+
+  toggle.addEventListener('click', () => {
+    isDark = !isDark;
+    body.classList.toggle('light-mode', !isDark);
+
+    toggle.textContent = isDark ? '🌙 الوضع الداكن' : '☀️ الوضع الفاتح';
+
+    // SVG path fill
+    if (svgPath) {
+      svgPath.setAttribute('fill', isDark ? '#0b1220': 'white');
+    }
+
+    // SVG text color
+    svgTexts.forEach(t => {
+      t.setAttribute('fill', isDark ?'#e5e7eb' : '#111827' );
+    });
+
+    // Label text color
+    labels.forEach(label => {
+      label.style.color = isDark ? '#374151' : '#9ca3af';
+    });
+
+    // Optional: change panel BG for light mode
+    if (!isDark) {
+      controls.style.background = '#f9fafb';
+      controls.style.color = '#111827';
+    } else {
+      controls.style.background = 'var(--text)';
+      controls.style.color = 'var(--panel)';
+    }
+  });
+
+  controls.insertBefore(toggle, controls.firstChild);
+})();
+
+
+(function setupDestinationDistanceViewer() {
+  const fromSelect = document.getElementById('citySelect');       // current location
+  const toSelect = document.getElementById('destinationSelect');  // destination
+  const display = document.getElementById('distanceDisplay');
+
+  // Predefined distances in meters (manual entries)
+  const distances = [
+  { from: 'بيت لاهيا', to: 'بيت حانون', distance: 4 },
+  { from: 'بيت لاهيا', to: 'جباليا', distance: 6 },
+  { from: 'بيت لاهيا', to: 'غزة', distance: 10 },
+  { from: 'بيت لاهيا', to: 'النصيرات', distance: 22 },
+  { from: 'بيت لاهيا', to: 'دير البلح', distance: 26 },
+  { from: 'بيت لاهيا', to: 'المغازي', distance: 24 },
+  { from: 'بيت لاهيا', to: 'البريج', distance: 25 },
+  { from: 'بيت لاهيا', to: 'خان يونس', distance: 38 },
+  { from: 'بيت لاهيا', to: 'رفح', distance: 45 },
+
+  { from: 'بيت حانون', to: 'جباليا', distance: 5 },
+  { from: 'بيت حانون', to: 'غزة', distance: 9 },
+  { from: 'بيت حانون', to: 'النصيرات', distance: 21 },
+  { from: 'بيت حانون', to: 'دير البلح', distance: 25 },
+  { from: 'بيت حانون', to: 'المغازي', distance: 23 },
+  { from: 'بيت حانون', to: 'البريج', distance: 24 },
+  { from: 'بيت حانون', to: 'خان يونس', distance: 37 },
+  { from: 'بيت حانون', to: 'رفح', distance: 44 },
+
+  { from: 'جباليا', to: 'غزة', distance: 6 },
+  { from: 'جباليا', to: 'النصيرات', distance: 18 },
+  { from: 'جباليا', to: 'دير البلح', distance: 22 },
+  { from: 'جباليا', to: 'المغازي', distance: 20 },
+  { from: 'جباليا', to: 'البريج', distance: 21 },
+  { from: 'جباليا', to: 'خان يونس', distance: 34 },
+  { from: 'جباليا', to: 'رفح', distance: 41 },
+
+  { from: 'غزة', to: 'النصيرات', distance: 12 },
+  { from: 'غزة', to: 'دير البلح', distance: 16 },
+  { from: 'غزة', to: 'المغازي', distance: 14 },
+  { from: 'غزة', to: 'البريج', distance: 15 },
+  { from: 'غزة', to: 'خان يونس', distance: 28 },
+  { from: 'غزة', to: 'رفح', distance: 35 },
+
+  { from: 'النصيرات', to: 'دير البلح', distance: 4 },
+  { from: 'النصيرات', to: 'المغازي', distance: 2 },
+  { from: 'النصيرات', to: 'البريج', distance: 3 },
+  { from: 'النصيرات', to: 'خان يونس', distance: 17 },
+  { from: 'النصيرات', to: 'رفح', distance: 24 },
+
+  { from: 'دير البلح', to: 'المغازي', distance: 2 },
+  { from: 'دير البلح', to: 'البريج', distance: 3 },
+  { from: 'دير البلح', to: 'خان يونس', distance: 13 },
+  { from: 'دير البلح', to: 'رفح', distance: 20 },
+
+  { from: 'المغازي', to: 'البريج', distance: 2 },
+  { from: 'المغازي', to: 'خان يونس', distance: 15 },
+  { from: 'المغازي', to: 'رفح', distance: 22 },
+
+  { from: 'البريج', to: 'خان يونس', distance: 14 },
+  { from: 'البريج', to: 'رفح', distance: 21 },
+
+  { from: 'خان يونس', to: 'رفح', distance: 7 }
+];
+
+
+ function getDistance(from, to) {
+  if (!from || !to || from === to) return 0;
+
+  const entry = distances.find(d =>
+    (d.from === from && d.to === to) ||
+    (d.from === to && d.to === from)
+  );
+
+  return entry ? entry.distance : null; // return null if not found
+}
+
+
+  function updateDistanceDisplay() {
+    const from = fromSelect.value;
+    const to = toSelect.value;
+
+    if (!from || !to || from === to) {
+      display.textContent = "المسافة: —";
+      return;
+    }
+
+    const distance = getDistance(from, to);
+    if (distance) {
+      display.textContent = `المسافة: ${distance.toLocaleString()} كم`;
+    } else {
+      display.textContent = "المسافة: غير متوفرة";
+    }
+  }
+
+  fromSelect.addEventListener('change', updateDistanceDisplay);
+  toSelect.addEventListener('change', updateDistanceDisplay);
+})();
+
+
+</script>
+
+</body>
+</html>

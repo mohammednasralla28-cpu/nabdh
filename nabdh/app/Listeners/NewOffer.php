@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Listeners;
+
+use App\Events\NewOfferEvent;
+use App\Models\User;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Notification;
+
+class NewOffer implements ShouldQueue {
+    /**
+    * Create the event listener.
+    */
+
+
+    /**
+    * Handle the event.
+    */
+
+    public function handle( NewOfferEvent $event ): void {
+        $users = User::with( [ 'userNotifications' ] )->where( 'recive_notification', true )->get();
+        $product = $event->product;
+        $store = $event->product->store;
+        $title = "عرض جديد: خصم على {$product->name} في {$store->name}";
+        $status = 'offer';
+
+        Notification::send( $users, new \App\Notifications\UserNotification( $title, $status ) );
+    }
+}
